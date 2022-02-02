@@ -1,6 +1,7 @@
 {
   "name": "candy-machine-mint",
   "version": "0.2.0",
+  "homepage": "https://footballpunks.net",
   "private": true,
   "engines": {
     "npm": "6.14.13",

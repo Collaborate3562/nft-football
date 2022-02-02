@@ -48,7 +48,7 @@ function MintSection(props: MintProps) {
   const [isUserMinting, setIsUserMinting] = useState(false);
   const [candyMachine, setCandyMachine] = useState<CandyMachineAccount>();
   const [isActive, setIsActive] = useState(false);
-  const [whitelistEnabled, setWhitelistEnabled] = useState(false);
+  const [isWhitelisted, setIsWhitelisted] = useState(false);
   const [whitelistTokenBalance, setWhitelistTokenBalance] = useState(0);
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
@@ -92,7 +92,6 @@ function MintSection(props: MintProps) {
         setCandyMachine(cndy);
 
         if (cndy.state.whitelistMintSettings) {
-          setWhitelistEnabled(true);
           let balance = 0;
           try {
             const tokenBalance = await props.connection.getTokenAccountBalance(
@@ -110,9 +109,20 @@ function MintSection(props: MintProps) {
             balance = 0;
           }
           setWhitelistTokenBalance(balance);
-          setIsActive(balance > 0);
-        } else {
-          setWhitelistEnabled(false);
+          setIsWhitelisted(balance > 0);
+
+          if (balance > 0) {
+            setIsActive(true);
+          } else {
+            if (
+              cndy.state.goLiveDate <=
+              new anchor.BN(new Date().getTime() / 1000)
+            ) {
+              setIsActive(true);
+            } else {
+              setIsActive(false);
+            }
+          }
         }
       } catch (e) {
         console.log("There was a problem fetching Candy Machine state");
@@ -209,19 +219,38 @@ function MintSection(props: MintProps) {
 
             {candyMachine ? (
               <>
-                <MintText>
-                  {isActive
-                    ? wallet && whitelistEnabled
-                      ? `You have ${whitelistTokenBalance} whitelist mint(s)
-                      remaining.
-                      ${candyMachine.state.itemsRemaining} / 395 item remaining`
-                      : `${
-                          candyMachine.state.itemsRemaining
-                        } remaining / ${getMintPrice(candyMachine)} SOL each`
-                    : null}
-                </MintText>
+                {wallet && isActive ? (
+                  isWhitelisted ? (
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <MintText>{`${candyMachine.state.itemsRemaining} / ${candyMachine.state.itemsAvailable} remaining`}</MintText>
+                      <MintText>{`You have ${whitelistTokenBalance} whitelist mint(s) remaining.`}</MintText>
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <MintText>{`${candyMachine.state.itemsRemaining} / ${candyMachine.state.itemsAvailable} remaining`}</MintText>
+                      <MintText>{`${getMintPrice(
+                        candyMachine
+                      )} SOL each`}</MintText>
+                    </div>
+                  )
+                ) : null}
                 <MintActions>
-                  {isActive ? (
+                  {isActive || isWhitelisted ? (
                     <MintQuantityWrapper>
                       <MintButton
                         candyMachine={candyMachine}
@@ -238,7 +267,9 @@ function MintSection(props: MintProps) {
                         justifyContent: "space-around",
                       }}
                     >
-                      <h3>Mint starts in</h3>
+                      {!candyMachine?.state?.isSoldOut && (
+                        <h3>Mint starts in</h3>
+                      )}
                       <MintCountdown
                         date={toDate(
                           candyMachine?.state.goLiveDate
