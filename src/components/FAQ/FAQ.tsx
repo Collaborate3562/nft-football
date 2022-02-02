@@ -9,7 +9,7 @@ const FAQ_DATA = [
     question: "How many NFTs will be released to the public?",
     answer: "A total of 365 Football Punks.",
   },
-  { question: "What is the minting price?", answer: "200 Matic (Polygon)." },
+  { question: "What is the minting price?", answer: "3 Sol (Solana)." },
   {
     question: "Where can I get a Football Punk?",
     answer:
@@ -18,7 +18,7 @@ const FAQ_DATA = [
   {
     question: "When will I be able to see my Football Punk?",
     answer:
-      "Once you have minted a Football Punk NFT, you will be able to see it by connecting your wallet to OpenSea.",
+      "Once you have minted a Football Punk NFT, you will be able to see it by connecting your wallet to MagicEden.",
   },
   {
     question: "Will there be any giveaways?",

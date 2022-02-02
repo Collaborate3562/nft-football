@@ -16,8 +16,9 @@ export const SocialLink = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: ${({theme}) => theme.accentShadow};
-  background: ${({theme}) => theme.bgColor};
+  box-shadow: ${({ theme }) => theme.accentShadow};
+  background: ${({ theme }) => theme.bgColor};
+  overflow: hidden;
 
   :not(:first-of-type) {
     margin-left: 20px;

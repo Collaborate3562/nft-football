@@ -1,8 +1,12 @@
 import React from "react";
-import { SocialGroupWrapper, SocialLink, SocialLinkImage } from "./SocialGroup.styles";
+import {
+  SocialGroupWrapper,
+  SocialLink,
+  SocialLinkImage,
+} from "./SocialGroup.styles";
 
 import { FaTwitter, FaDiscord } from "react-icons/fa";
-import OpenSeaImage from '../../assets/opensea.svg';
+import MagicEdenImage from "../../assets/magiceden.png";
 
 function SocialGroup() {
   return (
@@ -13,11 +17,8 @@ function SocialGroup() {
       <SocialLink href="https://discord.com" target="_blank">
         <FaDiscord />
       </SocialLink>
-      <SocialLink
-        href="https://opensea.io/collection/footballpunks"
-        target="_blank"
-      >
-        <SocialLinkImage src={OpenSeaImage} />
+      <SocialLink href="https://magiceden.io/u/footballpunks" target="_blank">
+        <SocialLinkImage src={MagicEdenImage} />
       </SocialLink>
     </SocialGroupWrapper>
   );

@@ -21,43 +21,43 @@ import { MintButton } from "./MintButton";
 // Web3 import
 import { Snackbar } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-import { PublicKey } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { GatewayProvider } from "@civic/solana-gateway-react";
-import { getCandyMachineId, AlertState, getMintPrice } from "../../web3/utils";
+import {
+  AlertState,
+  getAtaForMint,
+  getMintPrice,
+  toDate,
+} from "../../web3/utils";
 import {
   awaitTransactionSignatureConfirmation,
   CandyMachineAccount,
-  CANDY_MACHINE_PROGRAM,
   getCandyMachineState,
   mintToken,
 } from "../../web3/candy-machine";
+import { MintCountdown } from "./MintCountdown";
 
-// const PRICE = 0.08;
-// const REMAINING = 238;
+export interface MintProps {
+  candyMachineId?: anchor.web3.PublicKey;
+  connection: anchor.web3.Connection;
+  startDate: number;
+  txTimeout: number;
+  rpcHost: string;
+}
 
-const rpcHost = process.env.REACT_APP_SOLANA_RPC_HOST!;
-const connection = new anchor.web3.Connection(
-  rpcHost ? rpcHost : anchor.web3.clusterApiUrl("devnet")
-);
-
-function MintSection() {
-  const candyMachineId = getCandyMachineId();
-  const startDateSeed = parseInt(process.env.REACT_APP_CANDY_START_DATE!, 10);
-  const txTimeout = 30000;
-
+function MintSection(props: MintProps) {
   const [isUserMinting, setIsUserMinting] = useState(false);
   const [candyMachine, setCandyMachine] = useState<CandyMachineAccount>();
+  const [isActive, setIsActive] = useState(false);
+  const [whitelistEnabled, setWhitelistEnabled] = useState(false);
+  const [whitelistTokenBalance, setWhitelistTokenBalance] = useState(0);
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
     message: "",
     severity: undefined,
   });
 
-  const rpcUrl = rpcHost;
   const wallet = useWallet();
 
-  // const [quantity, setQuantity] = useState(1);
   const image = useImageChanger();
 
   const anchorWallet = useMemo(() => {
@@ -82,20 +82,44 @@ function MintSection() {
       return;
     }
 
-    if (candyMachineId) {
+    if (props.candyMachineId) {
       try {
         const cndy = await getCandyMachineState(
           anchorWallet,
-          candyMachineId,
-          connection
+          props.candyMachineId,
+          props.connection
         );
         setCandyMachine(cndy);
+
+        if (cndy.state.whitelistMintSettings) {
+          setWhitelistEnabled(true);
+          let balance = 0;
+          try {
+            const tokenBalance = await props.connection.getTokenAccountBalance(
+              (
+                await getAtaForMint(
+                  cndy.state.whitelistMintSettings.mint,
+                  anchorWallet.publicKey
+                )
+              )[0]
+            );
+
+            balance = tokenBalance?.value?.uiAmount || 0;
+          } catch (e) {
+            console.error(e);
+            balance = 0;
+          }
+          setWhitelistTokenBalance(balance);
+          setIsActive(balance > 0);
+        } else {
+          setWhitelistEnabled(false);
+        }
       } catch (e) {
         console.log("There was a problem fetching Candy Machine state");
         console.log(e);
       }
     }
-  }, [anchorWallet, candyMachineId]);
+  }, [anchorWallet, props.candyMachineId, props.connection]);
 
   const onMint = async () => {
     try {
@@ -108,8 +132,8 @@ function MintSection() {
         if (mintTxId) {
           status = await awaitTransactionSignatureConfirmation(
             mintTxId,
-            txTimeout,
-            connection,
+            props.txTimeout,
+            props.connection,
             true
           );
         }
@@ -159,14 +183,12 @@ function MintSection() {
 
   useEffect(() => {
     refreshCandyMachineState();
-  }, [anchorWallet, candyMachineId, refreshCandyMachineState]);
-
-  // const increment = () => setQuantity((prevCount) => prevCount + 1);
-  // const decrement = () =>
-  //   setQuantity((prevCount) => (prevCount > 1 ? prevCount - 1 : prevCount));
-
-  // const remainingPunks = REMAINING - quantity;
-  // const totalCost = PRICE * quantity;
+  }, [
+    anchorWallet,
+    props.candyMachineId,
+    props.connection,
+    refreshCandyMachineState,
+  ]);
 
   return (
     <MintingWrapper id="description">
@@ -188,54 +210,56 @@ function MintSection() {
             {candyMachine ? (
               <>
                 <MintText>
-                  {candyMachine &&
-                    `${
-                      candyMachine.state.itemsRemaining
-                    } remaining / ${getMintPrice(candyMachine)} SOL each`}
+                  {isActive
+                    ? wallet && whitelistEnabled
+                      ? `You have ${whitelistTokenBalance} whitelist mint(s)
+                      remaining.`
+                      : `${
+                          candyMachine.state.itemsRemaining
+                        } remaining / ${getMintPrice(candyMachine)} SOL each`
+                    : null}
                 </MintText>
                 <MintActions>
-                  <MintQuantityWrapper>
-                    {candyMachine?.state.isActive &&
-                    candyMachine?.state.gatekeeper &&
-                    wallet.publicKey &&
-                    wallet.signTransaction ? (
-                      <GatewayProvider
-                        wallet={{
-                          publicKey:
-                            wallet.publicKey ||
-                            new PublicKey(CANDY_MACHINE_PROGRAM),
-                          //@ts-ignore
-                          signTransaction: wallet.signTransaction,
-                        }}
-                        gatekeeperNetwork={
-                          candyMachine?.state?.gatekeeper?.gatekeeperNetwork
-                        }
-                        clusterUrl={rpcUrl}
-                        options={{ autoShowModal: false }}
-                      >
-                        <MintButton
-                          candyMachine={candyMachine}
-                          isMinting={isUserMinting}
-                          onMint={onMint}
-                        />
-                      </GatewayProvider>
-                    ) : (
+                  {isActive ? (
+                    <MintQuantityWrapper>
                       <MintButton
                         candyMachine={candyMachine}
                         isMinting={isUserMinting}
                         onMint={onMint}
                       />
-                    )}
-                  </MintQuantityWrapper>
+                    </MintQuantityWrapper>
+                  ) : (
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <h3>Mint starts in</h3>
+                      <MintCountdown
+                        date={toDate(
+                          candyMachine?.state.goLiveDate
+                            ? candyMachine?.state.goLiveDate
+                            : candyMachine?.state.isPresale
+                            ? new anchor.BN(new Date().getTime() / 1000)
+                            : undefined
+                        )}
+                        style={{ justifyContent: "flex-end" }}
+                        status={
+                          candyMachine?.state?.isSoldOut
+                            ? "SOLD OUT!"
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
                 </MintActions>
               </>
             ) : (
               <LoadingCandyMachine />
             )}
-
-            {/* <MintText>
-              Total Cost: <b>{totalCost.toFixed(2)}</b> ETH
-            </MintText> */}
           </MintingBox>
         </MintingContent>
       </MintingContainer>
