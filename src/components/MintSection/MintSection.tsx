@@ -213,7 +213,8 @@ function MintSection(props: MintProps) {
                   {isActive
                     ? wallet && whitelistEnabled
                       ? `You have ${whitelistTokenBalance} whitelist mint(s)
-                      remaining.`
+                      remaining.
+                      ${candyMachine.state.itemsRemaining} / 395 item remaining`
                       : `${
                           candyMachine.state.itemsRemaining
                         } remaining / ${getMintPrice(candyMachine)} SOL each`
