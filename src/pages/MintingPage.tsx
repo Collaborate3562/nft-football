@@ -1,22 +1,24 @@
 import * as anchor from "@project-serum/anchor";
 import { MintSection } from "../components";
+import { getCandyMachineId } from "../web3/utils";
 
-export interface MintProps {
-  candyMachineId?: anchor.web3.PublicKey;
-  connection: anchor.web3.Connection;
-  startDate: number;
-  txTimeout: number;
-  rpcHost: string;
-}
+const candyMachineId = getCandyMachineId();
+const rpcHost = process.env.REACT_APP_SOLANA_RPC_HOST!;
+const connection = new anchor.web3.Connection(
+  rpcHost ? rpcHost : anchor.web3.clusterApiUrl("devnet")
+);
 
-function MintingPage(props: MintProps) {
+const startDateSeed = parseInt(process.env.REACT_APP_CANDY_START_DATE!, 10);
+const txTimeoutInMilliseconds = 30000;
+
+function MintingPage() {
   return (
     <MintSection
-      candyMachineId={props.candyMachineId}
-      connection={props.connection}
-      startDate={props.startDate}
-      txTimeout={props.txTimeout}
-      rpcHost={props.rpcHost}
+      candyMachineId={candyMachineId}
+      connection={connection}
+      startDate={startDateSeed}
+      txTimeout={txTimeoutInMilliseconds}
+      rpcHost={rpcHost}
     />
   );
 }

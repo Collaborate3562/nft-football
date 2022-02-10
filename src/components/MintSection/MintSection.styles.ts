@@ -43,6 +43,7 @@ export const MintingContent = styled.div`
   flex: 1;
   margin-left: 50px;
   width: 90%;
+  height: auto;
 
   @media screen and (max-width: 800px) {
     margin-left: 0;
@@ -60,6 +61,8 @@ export const MintingBox = styled.div`
   box-shadow: ${({ theme }) => theme.accentShadow};
   border-radius: 10px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const MintTitle = styled.p`
@@ -87,12 +90,12 @@ export const MintText = styled.p`
 `;
 
 export const MintActions = styled.div`
-  width: 100%;
+  flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 50px;
-  margin-top: 20px;
+  height: 60px;
+  margin-top: 10px;
 
   & > * {
     height: 100%;
@@ -105,10 +108,11 @@ export const MintActions = styled.div`
 
 export const MintQuantityWrapper = styled.div`
   flex: 1;
-  box-shadow: inset 0 0 0 2px white;
+  // box-shadow: inset 0 0 0 2px white;
   border-radius: 10px;
   display: flex;
   align-items: center;
+  justify-content: center;
 
   & > * {
     height: 100%;
@@ -150,6 +154,8 @@ export const QuantityControl = styled.div`
 
 export const CTAButton = styled.button`
   flex: 1;
+  max-width: 200px;
+  min-height: 40px;
   background: ${({ theme }) => theme.gradientBg};
   border: none;
   border-radius: 10px;

@@ -8,10 +8,10 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       padding: theme.spacing(0),
       "& > *": {
-        margin: theme.spacing(0.5),
+        margin: theme.spacing(1),
         marginRight: 0,
-        width: theme.spacing(6),
-        height: theme.spacing(6),
+        width: 64,
+        height: 64,
         display: "flex",
         flexDirection: "column",
         alignContent: "center",
@@ -20,27 +20,35 @@ const useStyles = makeStyles((theme: Theme) =>
         background: "#384457",
         color: "white",
         borderRadius: 5,
-        fontSize: 10,
+        fontSize: 14,
+        "@media(max-width: 600px)": {
+          width: 48,
+          height: 48,
+          fontSize: 12,
+        },
       },
     },
     done: {
       display: "flex",
       margin: theme.spacing(1),
       marginRight: 0,
-      padding: theme.spacing(1),
+      padding: 5,
       flexDirection: "column",
       alignContent: "center",
       alignItems: "center",
       justifyContent: "center",
       background: "#384457",
       color: "white",
-      borderRadius: 5,
+      borderRadius: 10,
       fontWeight: "bold",
       fontSize: 18,
     },
     item: {
       fontWeight: "bold",
-      fontSize: 18,
+      fontSize: 24,
+      "@media(max-width: 600px)": {
+        fontSize: 16,
+      },
     },
   })
 );
@@ -74,7 +82,6 @@ export const MintCountdown: React.FC<MintCountdownProps> = ({
     seconds,
     completed,
   }: MintCountdownRender) => {
-    hours += days * 24;
     if (completed) {
       return status ? <span className={classes.done}>{status}</span> : null;
     } else {
@@ -82,22 +89,28 @@ export const MintCountdown: React.FC<MintCountdownProps> = ({
         <div className={classes.root} style={style}>
           <Paper elevation={0}>
             <span className={classes.item}>
+              {days < 10 ? `0${days}` : days}
+            </span>
+            <span>days</span>
+          </Paper>
+          <Paper elevation={0}>
+            <span className={classes.item}>
               {hours < 10 ? `0${hours}` : hours}
             </span>
-            <span>hrs</span>
+            <span>hours</span>
           </Paper>
           <Paper elevation={0}>
             <span className={classes.item}>
               {minutes < 10 ? `0${minutes}` : minutes}
             </span>
-            <span>mins</span>
+            <span>minutes</span>
           </Paper>
-          <Paper elevation={0}>
+          {/* <Paper elevation={0}>
             <span className={classes.item}>
               {seconds < 10 ? `0${seconds}` : seconds}
             </span>
             <span>secs</span>
-          </Paper>
+          </Paper> */}
         </div>
       );
     }

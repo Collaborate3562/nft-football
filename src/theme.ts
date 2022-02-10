@@ -37,7 +37,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   h2, h3 {
-    background: ${({ theme }) => theme.gradientBg};
+    background: ${({ theme }) => theme.gradientBg} !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
@@ -45,6 +45,25 @@ export const GlobalStyles = createGlobalStyle`
 
   section:not(:last-of-type) {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .MuiPaper-root {
+    background: ${({ theme }) => theme.bgColor} !important;
+    box-shadow: rgb(255 0 0) 0px 0px 12px, rgb(0 0 255) 0px 0px 20px !important;
+    border: 2px solid white;
+    border-radius: 10px !important;
+  }
+
+  .MuiTypography-root {
+    font-weight: 600 !important;
+  }
+
+  .MuiDialogTitle-root {
+    background-color: ${({ theme }) => theme.bgColor} !important;
+  }
+
+  .MuiList-root {
+    background-color: ${({ theme }) => theme.bgColor} !important;
   }
 `;
 

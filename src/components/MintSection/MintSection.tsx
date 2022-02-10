@@ -217,9 +217,9 @@ function MintSection(props: MintProps) {
               Purchase your <NewLine>Football Punk!</NewLine>
             </MintTitle>
 
-            {candyMachine ? (
+            {wallet?.connected ? (
               <>
-                {wallet && isActive ? (
+                {candyMachine && isActive ? (
                   isWhitelisted ? (
                     <div
                       style={{
@@ -250,47 +250,68 @@ function MintSection(props: MintProps) {
                   )
                 ) : null}
                 <MintActions>
-                  {isActive || isWhitelisted ? (
-                    <MintQuantityWrapper>
-                      <MintButton
-                        candyMachine={candyMachine}
-                        isMinting={isUserMinting}
-                        onMint={onMint}
-                      />
-                    </MintQuantityWrapper>
+                  {candyMachine ? (
+                    isActive || isWhitelisted ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          flex: 1,
+                        }}
+                      >
+                        <MintQuantityWrapper>
+                          <MintButton
+                            candyMachine={candyMachine}
+                            isMinting={isUserMinting}
+                            onMint={onMint}
+                          />
+                        </MintQuantityWrapper>
+                        <h6 style={{ marginTop: 10 }}>
+                          Make sure you have enough SOL in your wallet
+                        </h6>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          flex: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-around",
+                        }}
+                      >
+                        <div
+                          style={{ display: "flex", flexDirection: "column" }}
+                        >
+                          {!candyMachine?.state?.isSoldOut && (
+                            <h3 style={{ margin: "10px 0", fontSize: 24 }}>
+                              Mint starts in
+                            </h3>
+                          )}
+                          <MintCountdown
+                            date={toDate(
+                              candyMachine?.state.goLiveDate
+                                ? candyMachine?.state.goLiveDate
+                                : candyMachine?.state.isPresale
+                                ? new anchor.BN(new Date().getTime() / 1000)
+                                : undefined
+                            )}
+                            style={{ justifyContent: "flex-end" }}
+                            status={
+                              candyMachine?.state?.isSoldOut
+                                ? "SOLD OUT!"
+                                : undefined
+                            }
+                          />
+                        </div>
+                      </div>
+                    )
                   ) : (
-                    <div
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-around",
-                      }}
-                    >
-                      {!candyMachine?.state?.isSoldOut && (
-                        <h3>Mint starts in</h3>
-                      )}
-                      <MintCountdown
-                        date={toDate(
-                          candyMachine?.state.goLiveDate
-                            ? candyMachine?.state.goLiveDate
-                            : candyMachine?.state.isPresale
-                            ? new anchor.BN(new Date().getTime() / 1000)
-                            : undefined
-                        )}
-                        style={{ justifyContent: "flex-end" }}
-                        status={
-                          candyMachine?.state?.isSoldOut
-                            ? "SOLD OUT!"
-                            : undefined
-                        }
-                      />
-                    </div>
+                    <LoadingCandyMachine style={{ margin: "0 auto" }} />
                   )}
                 </MintActions>
               </>
             ) : (
-              <LoadingCandyMachine />
+              <h3 style={{ marginTop: 20 }}>Please Connect Your Wallet</h3>
             )}
           </MintingBox>
         </MintingContent>
