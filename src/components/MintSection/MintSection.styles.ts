@@ -155,7 +155,7 @@ export const QuantityControl = styled.div`
 export const CTAButton = styled.button`
   flex: 1;
   max-width: 200px;
-  min-height: 40px;
+  min-height: 50px;
   background: ${({ theme }) => theme.gradientBg};
   border: none;
   border-radius: 10px;

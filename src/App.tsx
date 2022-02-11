@@ -21,7 +21,7 @@ import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletDialogProvider } from "@solana/wallet-adapter-material-ui";
+import { WalletDialogProviderStyled } from "./theme";
 
 const network = process.env.REACT_APP_SOLANA_NETWORK as WalletAdapterNetwork;
 
@@ -43,7 +43,7 @@ const App = () => {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <ThemeProvider theme={darkTheme}>
-          <WalletDialogProvider>
+          <WalletDialogProviderStyled>
             <GlobalStyles />
             <Header />
             <PageWrapper>
@@ -54,7 +54,7 @@ const App = () => {
               </Routes>
             </PageWrapper>
             <Footer />
-          </WalletDialogProvider>
+          </WalletDialogProviderStyled>
         </ThemeProvider>
       </WalletProvider>
     </ConnectionProvider>

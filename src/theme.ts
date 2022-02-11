@@ -3,6 +3,7 @@ import styled, {
   DefaultTheme,
   keyframes,
 } from "styled-components";
+import { WalletDialogProvider } from "@solana/wallet-adapter-material-ui";
 
 export const GlobalStyles = createGlobalStyle`
   * {
@@ -49,21 +50,13 @@ export const GlobalStyles = createGlobalStyle`
 
   .MuiPaper-root {
     background: ${({ theme }) => theme.bgColor} !important;
-    box-shadow: rgb(255 0 0) 0px 0px 12px, rgb(0 0 255) 0px 0px 20px !important;
+    box-shadow: ${({ theme }) => theme.accentShadow} !important;
     border: 2px solid white;
     border-radius: 10px !important;
   }
 
   .MuiTypography-root {
     font-weight: 600 !important;
-  }
-
-  .MuiDialogTitle-root {
-    background-color: ${({ theme }) => theme.bgColor} !important;
-  }
-
-  .MuiList-root {
-    background-color: ${({ theme }) => theme.bgColor} !important;
   }
 `;
 
@@ -126,5 +119,81 @@ export const GradientText = styled.span`
   font-size: 40px;
   @media screen and (max-width: 600px) {
     font-size: 28px;
+  }
+`;
+
+export const WalletDialogProviderStyled = styled(WalletDialogProvider)`
+  .MuiPaper-root {
+    background: ${({ theme }) => theme.bgColor};
+    box-shadow: ${({ theme }) => theme.accentShadow};
+    border: 2px solid white;
+    border-radius: 10px;
+  }
+
+  .MuiDialogTitle-root {
+    padding-bottom: 0;
+  }
+
+  .MuiBackdrop-root {
+    background: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  h2.MuiTypography-root {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 22px;
+
+    button {
+      cursor: pointer;
+      padding: 0;
+      margin-left: 10px;
+    }
+  }
+
+  .MuiDialogContent-root {
+    padding: 5px;
+  }
+
+  .MuiList-root {
+    padding: 0;
+  }
+
+  .MuiListItem-root button {
+    width: 100% !important;
+    position: relative;
+    font-weight: bold;
+    font-size: 18px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .MuiListItem-root:not(:last-of-type) button {
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -9px;
+      left: 3%;
+      width: 94%;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    h2.MuiTypography-root {
+      font-size: 18px;
+    }
+
+    .MuiListItem-root {
+      button {
+        font-size: 14px;
+      }
+    }
+
+    .MuiDialogTitle-root button {
+    }
   }
 `;
